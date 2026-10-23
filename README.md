@@ -166,6 +166,10 @@ The architecture skeleton (PyKX `kx.tick` processes, feed handler, gateway) come
 - query APIs in q (`aj` trade context, OHLC bars, daily realised volatility)
 - query tuning turned into timed benchmarks
 
+## License
+
+Released under the [MIT License](LICENSE).
+
 ## Author
 
 **Matthieu Briche** · kdb+/q & Python · [LinkedIn](https://www.linkedin.com/in/matthieu-briche-aa69b441/)
