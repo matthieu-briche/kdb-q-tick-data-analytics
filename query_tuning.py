@@ -6,6 +6,7 @@ resolution), and each line shows how many rows the query returns.
   1. filter order on a date-partitioned table (date first vs sym first)
   2. attributes on an in-memory column: none vs grouped (g#) vs parted (p#)
   3. sorted attribute (s#) on a time column for range lookups
+  4. top-N: full sort (idesc) vs partial selection (selectk module, KDB-X only)
 
     python query_tuning.py
 """
@@ -52,6 +53,20 @@ def main():
     kx.q("ts1: update `s#time from ts0")
     timed("no attribute (linear scan)", "select from ts0 where time within 0D12:00:00 0D12:00:01", 200)
     timed("sorted s# (binary search)", "select from ts1 where time within 0D12:00:00 0D12:00:01", 200)
+
+    print("\n4. Top-N without a full sort: the 10 largest values")
+    # optional KDB-X module (github.com/adotsch/kdb-x): () on plain kdb+, which has no `use`
+    kx.q("sk: @[{use x};`dot.selectk;{()}]")
+    has_sk = kx.q("0<count sk").py()
+    kx.q("v: exec sz*px from trade where date=d")                     # traded notional, one day
+    kx.q("big: 10000000?1f")                                          # 10M floats, to show the scaling
+    for name, vec in (("one day of notionals", "v"), ("10M random floats", "big")):
+        timed(f"full sort 10#idesc, {name}", f"10#idesc {vec}", 5)
+        if has_sk:
+            timed(f"selectk ikmax[10;], {name}", f"sk[`ikmax][10;{vec}]", 5)
+    if not has_sk:
+        print("  selectk: not available (needs KDB-X and the dot.selectk module), full sort only")
+    kx.q("delete big from `.")
 
 
 if __name__ == "__main__":

@@ -139,6 +139,7 @@ CI runs both on every push; the q tests run there once a licence is stored as th
 - filter order on a partitioned table (`date` first vs `sym` first)
 - `sym` column with no attribute vs `g#` vs `p#`
 - `s#` on `time` for range lookups
+- top-N with a full sort (`10#idesc v`) vs a partial selection (`ikmax[10;v]`, Floyd–Rivest, O(N)) from the `dot.selectk` module of [adotsch/kdb-x](https://github.com/adotsch/kdb-x), on one day of notionals and on 10M values. The module needs KDB-X: on plain kdb+ the script times the full sort only and says so.
 
 ## Repository structure
 
@@ -149,7 +150,7 @@ CI runs both on every push; the q tests run there once a licence is stored as th
 ├── create_database.py   # builds the partitioned HDB
 ├── tick.py              # tickerplant, RDB, HDB, chained TP, RTE (q), gateway
 ├── feed.py              # feed handler: accelerated replay into the tickerplant
-├── query_tuning.py      # partition, attribute and filter-order benchmarks
+├── query_tuning.py      # partition, attribute, filter-order and top-N benchmarks
 ├── smoke_run.py         # end-to-end run, saved to docs/sample_run.txt
 ├── tests/               # pytest: Hawkes generator, q RTE and query APIs
 ├── requirements.txt
